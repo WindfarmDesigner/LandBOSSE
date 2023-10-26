@@ -1,4 +1,8 @@
-# LandBOSSE
+Note:
+Adapted LandBOSSE replacing regular grid layout with irregular layout. Turbines and substation coordinates are inputs to the LandBOSSE code.
+All credit goes to NREL for their original LandBOSSE model.
+
+# LandBOSSE for irregular layouts
 
 ## Welcome to LandBOSSE!
 
@@ -27,11 +31,13 @@ The user guide comes in three parts:
 
 ### Software Installation
 
-There are two options depending on whether you are a developer or an end user and what operating system you are running.
-
-- **Windows end-user**: If you run the Microsoft Windows operating system and aren't setting up as a developer who is going to be modifying the core library, these instructions are for you. [Find out how to configure Windows for end users.](installation_instructions/windows_end_user.md)
-
-- **macOS end user** and **macOS developer**: If you run the macOS operating system, either as an end-user or as a developer, these instructions are for you. Both developers and end-users will need most of the steps. [Find out how to configure macOS for end users and developers.](installation_instructions/macos_developer.md)
+Changed from original LandBOSSE model!
+Updated instructions:
+1. Install anaconda
+2. Clone source code or download to desired path
+3. Open terminal, navigate to folder
+4. Type "pip install -e ."
+5. Run LandBOSSE by executing the file "run_landbosse.py".
 
 ### Operation after the installation
 
