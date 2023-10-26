@@ -272,7 +272,7 @@ class ArraySystem(CostModule):
 
     """
 
-    def __init__(self, input_dict, output_dict, project_name,Turbine_coordinates,Substation_coordinate):
+    def __init__(self, input_dict, output_dict, project_name,Turbine_coordinates,Substation_coordinate,Desired_Voltage):
 
         self.input_dict = input_dict
         self.output_dict = output_dict
@@ -288,11 +288,12 @@ class ArraySystem(CostModule):
         ''' NOTE
         Changed here '''
 
+
         dict_for_turbine_rating = self.output_dict['trans_dist_cost_module_type_operation']
         Turbine_Rating_MW  = dict_for_turbine_rating[0]['turbine_rating_MW']
 
         Total_Connection_length_km, Total_Cabling_length , Total_Cabling_costs_dollar = cabling_optimization_function(Turbine_Rating_MW,
-                                                                                          Turbine_coordinates,Substation_coordinate)
+                                                                                          Turbine_coordinates,Substation_coordinate, Desired_Voltage)
 
         self.Total_Connection_length_km = Total_Connection_length_km
         self.Total_Cabling_costs_dollar = Total_Cabling_costs_dollar

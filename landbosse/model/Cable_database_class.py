@@ -14,19 +14,41 @@ class Cable_database_class:
     Cable_Name = None
     Max_active_power = None
 
-    def __init__(self):
+    def __init__(self, Desired_Voltage):
 
         self.Cable_Voltage = self.Cable_Voltage_function()
         self.Cable_Type = self.Cable_Type_function()
         self.Cable_Resistance = self.Cable_Resistance_function()
         self.Cable_Capacitance = self.Cable_Capacitance_fucntion()
         self.Cable_ConductorSize = self.Cable_ConductorSize_fucntion()
-        self.Cable_CostPer_km = self.Cable_CostPer_km_fucntion()
+
         self.Cable_CurrentCapacity = self.Cable_CurrentCapacity_function()
         self.Cable_inductance = self.Cable_inductance_function()
         self.Cable_mass = self.Cable_mass_function()
-        self.Cable_Name = self.Cable_Name_function()
-        self.Max_active_power = self.Max_active_power_fucntion()
+
+
+        if Desired_Voltage == 10:
+            self.Cable_CostPer_km = self.Cable_CostPer_km_fucntion()[0:15]
+            self.Cable_Name = self.Cable_Name_function()[0:15]
+            self.Max_active_power = self.Max_active_power_fucntion()[0:15]
+        elif Desired_Voltage == 20:
+            self.Cable_CostPer_km = self.Cable_CostPer_km_fucntion()[15:30]
+            self.Cable_Name = self.Cable_Name_function()[15:30]
+            self.Max_active_power = self.Max_active_power_fucntion()[15:30]
+        elif Desired_Voltage == 30:
+            self.Cable_CostPer_km = self.Cable_CostPer_km_fucntion()[30:45]
+            self.Cable_Name = self.Cable_Name_function()[30:45]
+            self.Max_active_power = self.Max_active_power_fucntion()[30:45]
+        elif Desired_Voltage == 45:
+            self.Cable_CostPer_km = self.Cable_CostPer_km_fucntion()[45:60]
+            self.Cable_Name = self.Cable_Name_function()[45:60]
+            self.Max_active_power = self.Max_active_power_fucntion()[45:60]
+        elif Desired_Voltage == 60:
+            self.Cable_CostPer_km = self.Cable_CostPer_km_fucntion()[60:75]
+            self.Cable_Name = self.Cable_Name_function()[60:75]
+            self.Max_active_power = self.Max_active_power_fucntion()[60:75]
+        else:
+            raise ValueError("The voltage level chosen is not available")
 
 # Cable type (array or export)
 

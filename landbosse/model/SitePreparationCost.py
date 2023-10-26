@@ -131,7 +131,7 @@ class SitePreparationCost(CostModule):
     """
 
 
-    def __init__(self, input_dict, output_dict, project_name,Turbine_coordinates, Substation_coordinate):
+    def __init__(self, input_dict, output_dict, project_name,Turbine_coordinates, Substation_coordinate,Desired_Voltage):
         """
         Parameters
         ----------
@@ -174,9 +174,10 @@ class SitePreparationCost(CostModule):
         ''' NOTE '''
         ''' Changed here '''
 
+
         Turbine_Rating_MW = self.output_dict['foundation_module_type_operation'][3]['turbine_rating_MW']
 
-        Total_Connection_length_km, Total_Cabling_length, Total_Cabling_costs_dollar = cabling_optimization_function(Turbine_Rating_MW, Turbine_coordinates, Substation_coordinate)
+        Total_Connection_length_km, Total_Cabling_length, Total_Cabling_costs_dollar = cabling_optimization_function(Turbine_Rating_MW, Turbine_coordinates, Substation_coordinate, Desired_Voltage)
 
         self.Total_Connection_length_km = Total_Connection_length_km
 

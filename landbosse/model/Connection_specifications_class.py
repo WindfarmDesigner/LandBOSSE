@@ -4,16 +4,7 @@
 from landbosse.model.Cable_database_class import Cable_database_class
 import numpy as np
 
-Cable_Database = Cable_database_class()
-Max_active_power = Cable_Database.Max_active_power
-# print("Max_active_power", Max_active_power)
-# print("\n")
-Cable_Name = Cable_Database.Cable_Name
-# print("Cable_Name", Cable_Name)
-# print("\n")
-Cable_CostPer_km = Cable_Database.Cable_CostPer_km
-# print("Cable_CostPer_m", Cable_CostPer_m)
-# print("\n")
+
 
 class Connection_specifications_class:
 
@@ -27,7 +18,7 @@ class Connection_specifications_class:
 #     P_each_connection : A dictionary with key as the connections in the wind farm and values as the power handled
 #     by each connection
 #     Example : {(0, 1): 40, (1, 5): 50, (5, 8): 60, (8, 7): 70, (7, 6): 80, (6, 10): 100, (3, 0): 30, (2, 3): 20, (4, 2): 10, (9, 6): 10}
-#     Optimized_cable_length_for_each_connection : A dictionary containing different connections and its optimized length in m
+#     Optimized_cable_length_for_each_connection : A dictionary containing different connections and its optimized length in km
 #     Example : {(0, 10): 33.12099032335839, (1, 2): 25.238858928247925, (1, 11): 6.082762530298219, (2, 4): 23.0, (3, 6): 15.620499351813308,
     #     (3, 11): 29.068883707497267, (5, 7): 17.46424919657298, (7, 10): 13.0, (8, 9): 33.54101966249684, (9, 10): 14.866068747318506,
     #     (9, 11): 16.15549442140351}
@@ -38,14 +29,25 @@ class Connection_specifications_class:
 #     of setting up each connection respectively.
 
 
-    def __init__(self,P_each_connection, Optimized_cable_length_for_each_connection):
+    def __init__(self,P_each_connection, Optimized_cable_length_for_each_connection, Desired_Volatage):
 
-        Cost_of_cable, Name_of_cable, Number_of_cables = self.Calculations(P_each_connection, Optimized_cable_length_for_each_connection)
+        Cost_of_cable, Name_of_cable, Number_of_cables = self.Calculations(P_each_connection, Optimized_cable_length_for_each_connection, Desired_Volatage)
         self.TotalCostOfEachConnection = Cost_of_cable  # right now in $/m , change it to $ by multiplying the cost by length of the connection
         self.NameOfCable = Name_of_cable
         self.NumberOfCables = Number_of_cables
 
-    def Calculations(self,P_each_connection, Optimized_cable_length_for_each_connection):
+    def Calculations(self,P_each_connection, Optimized_cable_length_for_each_connection, Desired_Voltage):
+
+        Cable_Database = Cable_database_class(Desired_Voltage)
+        Max_active_power = Cable_Database.Max_active_power
+        # print("Max_active_power", Max_active_power)
+        # print("\n")
+        Cable_Name = Cable_Database.Cable_Name
+        # print("Cable_Name", Cable_Name)
+        # print("\n")
+        Cable_CostPer_km = Cable_Database.Cable_CostPer_km
+        # print("Cable_CostPer_km", Cable_CostPer_km)
+        # print("\n")
 
         Closest_biggest_neighbour = {}
         Index = {}

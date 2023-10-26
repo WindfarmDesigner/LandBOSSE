@@ -1,6 +1,5 @@
 import os
 from datetime import datetime
-from sys import exit
 import pandas as pd
 from landbosse.excelio import XlsxSerialManagerRunner
 from landbosse.excelio import XlsxParallelManagerRunner
@@ -10,7 +9,7 @@ from landbosse.excelio import CsvGenerator
 from landbosse.excelio import XlsxFileOperations
 
 
-def run_landbosse(Turbine_coordinates, Substation_coordinate):
+def run_landbosse(Turbine_coordinates, Substation_coordinate,Desired_Voltage):
 
 
     # Print start timestamp
@@ -47,7 +46,7 @@ def run_landbosse(Turbine_coordinates, Substation_coordinate):
 
     # final_result aggregates all the results from all the projects.
 
-    final_result = manager_runner.run_from_project_list_xlsx(projects_xlsx, Turbine_coordinates, Substation_coordinate, enable_scaling_study)
+    final_result = manager_runner.run_from_project_list_xlsx(projects_xlsx, Turbine_coordinates, Substation_coordinate,Desired_Voltage, enable_scaling_study)
 
     '''till here'''
 

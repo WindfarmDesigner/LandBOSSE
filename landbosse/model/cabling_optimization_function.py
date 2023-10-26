@@ -1,12 +1,11 @@
-from  landbosse.model.Cable_length_optimization_algorithms_class import Cable_length_optimization_algorithms_class
+from landbosse.model.Cable_length_optimization_algorithms_class import Cable_length_optimization_algorithms_class
 from landbosse.model.Connection_specifications_class import Connection_specifications_class
 from landbosse.model.Cable_database_class import Cable_database_class
 from collections import defaultdict
 import numpy as np
 
 
-def cabling_optimization_function(Turbine_Power,Turbine_coordinates,Substation_coordinate):
-
+def cabling_optimization_function(Turbine_Power,Turbine_coordinates,Substation_coordinate, Desired_Voltage):
     # Part 2: Cable length opmization for each connection
     #########################################################################################################################
     Cable_optimization = Cable_length_optimization_algorithms_class(Turbine_coordinates, Substation_coordinate)
@@ -21,6 +20,7 @@ def cabling_optimization_function(Turbine_Power,Turbine_coordinates,Substation_c
     # print("\n")
 
     # Total length of connection in km
+
     Total_connection_length = sum(Optimized_cable_length_for_each_connection.values())
     # print(f' Total Connection length: {Total_connection_length : .2f} km ')
     # print("\n")
@@ -95,7 +95,8 @@ def cabling_optimization_function(Turbine_Power,Turbine_coordinates,Substation_c
     # Part 4: Finding connection specifications such as cost, name and number of cables for each connection.
     #########################################################################################################################
     ConnectionSpecifications = Connection_specifications_class(Power_handled_by_each_connection,
-                                                               Optimized_cable_length_for_each_connection)
+                                                               Optimized_cable_length_for_each_connection,
+                                                               Desired_Voltage)
 
     # print("TotalCostOfEachConnection", ConnectionSpecifications.TotalCostOfEachConnection)
     # print("\n")

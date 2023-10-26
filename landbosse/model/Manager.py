@@ -21,7 +21,7 @@ class Manager:
     structure.
     """
 
-    def __init__(self, input_dict, output_dict,Turbine_coordinates, Substation_coordinate):
+    def __init__(self, input_dict, output_dict,Turbine_coordinates, Substation_coordinate, Desired_Voltage):
         """
         This initializer sets up the instance variables of:
 
@@ -36,6 +36,7 @@ class Manager:
         self.output_dict = output_dict
         self.Turbine_coordinates = Turbine_coordinates
         self.Substation_coordinate = Substation_coordinate
+        self.Desired_Voltage = Desired_Voltage
 
 
     def execute_landbosse(self, project_name):
@@ -60,7 +61,7 @@ class Manager:
             '''NOTE'''
             '''Changed here'''
 
-            roads_cost = SitePreparationCost(input_dict=self.input_dict, output_dict=self.output_dict, project_name=project_name, Turbine_coordinates = self.Turbine_coordinates, Substation_coordinate = self.Substation_coordinate)
+            roads_cost = SitePreparationCost(input_dict=self.input_dict, output_dict=self.output_dict, project_name=project_name, Turbine_coordinates = self.Turbine_coordinates, Substation_coordinate = self.Substation_coordinate, Desired_Voltage = self.Desired_Voltage)
             roads_cost.run_module()
 
             '''Till here'''
@@ -77,7 +78,7 @@ class Manager:
             ''' NOTE'''
             ''' Changed here '''
 
-            collection_cost = ArraySystem(input_dict=self.input_dict, output_dict=self.output_dict, project_name=project_name, Turbine_coordinates = self.Turbine_coordinates, Substation_coordinate = self.Substation_coordinate)
+            collection_cost = ArraySystem(input_dict=self.input_dict, output_dict=self.output_dict, project_name=project_name, Turbine_coordinates = self.Turbine_coordinates, Substation_coordinate = self.Substation_coordinate, Desired_Voltage = self.Desired_Voltage)
             collection_cost.run_module()
 
             '''till here'''
@@ -95,7 +96,8 @@ class Manager:
                 output_dict=self.output_dict,
                 project_name=project_name,
                 Turbine_coordinates = self.Turbine_coordinates,
-                Substation_coordinate = self.Substation_coordinate
+                Substation_coordinate = self.Substation_coordinate,
+                Desired_Voltage = self.Desired_Voltage
             )
             erection_cost.run_module()
 

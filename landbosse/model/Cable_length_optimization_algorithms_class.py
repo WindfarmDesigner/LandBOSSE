@@ -17,6 +17,22 @@ class Cable_length_optimization_algorithms_class:
     Turbine_coordinates = None
     Substation_coordinate = None
 
+# Input:
+# The input to this python file is Turbine Coordinates and Substation coordinate.
+# Example:
+# Turbine_coordinates = np.array([(3.50,4.99),(3.70,3.20),(1.10,3.57),(3.37,3.58),(2.34,4.50),(2.53,2.01),(4.28,4.61),
+#             (1.60,3.73),(3.50,4.23),(4.39,0.68),(0.16,4.35),(3.23,3.75),(0.54,0.57),(4.85,1.96),(0.99,2.34)])
+# Substation_coordinate = np.array([(3.5,3.5)])
+#
+# Output
+# Based on the coordinates given it gives the name to each coordinate based on its index number and then connect all the coordinates as shortly as possible to form a Minimum Spanning Tree.
+# It shows the result as a dictionary.
+# Example: Optimized Connection length : {(0, 6): 0.8676404785393547, (0, 8): 0.7599999999999998, (1, 3): 0.5032891812864647,
+#                     (1, 13): 1.6911830178901393, (2, 7): 0.5249761899362676, (2, 10): 1.2214745187681977, (2, 14): 1.2349089035228469,
+#                 (3, 11): 0.22022715545545243, (3, 15): 1.3868309197591464, (4, 7): 1.067941945987702, (4, 11): 1.163872845288522,
+#                 (5, 15): 0.49091750834534326, (8, 11): 0.550726792520575, (9, 13): 1.360147050873544, (12, 14): 1.826307750626931}
+
+
     def __init__(self, Turbine_coordinates_input, Substation_coordinate_input ):
 
         self.Turbine_coordinates  = Turbine_coordinates_input
