@@ -7,12 +7,14 @@ from shutil import copytree
 from .XlsxOperationException import XlsxOperationException
 
 
+
 class XlsxFileOperations:
     """
     This class is made to handle file naming and copying.
     """
 
     def __init__(self):
+
         """
         The __init__() method just makes a timestamp that will be used throughout
         the lifetime of this instance.

@@ -17,7 +17,7 @@ class XlsxParallelManagerRunner(XlsxManagerRunner):
     with a ProcessPoolExecutor.
     """
 
-    def run_from_project_list_xlsx(self, projects_xlsx, enable_cost_and_scaling_modifications=False):
+    def run_from_project_list_xlsx(self, projects_xlsx,Turbine_coordinates, Substation_coordinate , enable_cost_and_scaling_modifications=False):
         """
         This function runs all the scenarios in the projects_xlsx file. It creates
         the OrderedDict that holds the results of all the runs. See the return
@@ -184,7 +184,7 @@ def run_single_project(task_dict):
     # Now run the manager and accumulate its result into the runs_dict
     output_dict = dict()
     output_dict['project_series'] = project_series
-    mc = Manager(input_dict=master_input_dict, output_dict=output_dict)
+    mc = Manager(input_dict=master_input_dict, output_dict=output_dict, Turbine_coordinates = Turbine_coordinates,Substation_coordinate =  Substation_coordinate)
     mc.execute_landbosse(project_name=project_id_with_serial)
 
     print(f'End {project_id_with_serial}')

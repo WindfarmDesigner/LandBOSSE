@@ -4,6 +4,7 @@ from .WeatherDelay import WeatherDelay as WD
 import traceback
 from .CostModule import CostModule
 import pandas as pd
+from landbosse.model.cabling_optimization_function import  cabling_optimization_function
 
 class SitePreparationCost(CostModule):
     """
@@ -130,7 +131,7 @@ class SitePreparationCost(CostModule):
     """
 
 
-    def __init__(self, input_dict, output_dict, project_name):
+    def __init__(self, input_dict, output_dict, project_name,Turbine_coordinates, Substation_coordinate):
         """
         Parameters
         ----------
@@ -167,6 +168,23 @@ class SitePreparationCost(CostModule):
 
         # calculated road properties
         self._lift_depth_m = 0.2
+
+
+
+        ''' NOTE '''
+        ''' Changed here '''
+
+        Turbine_Rating_MW = self.output_dict['foundation_module_type_operation'][3]['turbine_rating_MW']
+
+        Total_Connection_length_km, Total_Cabling_length, Total_Cabling_costs_dollar = cabling_optimization_function(Turbine_Rating_MW, Turbine_coordinates, Substation_coordinate)
+
+        self.Total_Connection_length_km = Total_Connection_length_km
+
+
+        ''' till here '''
+
+
+
 
     def calculate_road_properties(self, road_properties_input, road_properties_output):
         """
@@ -210,16 +228,31 @@ class SitePreparationCost(CostModule):
 
         """
 
+
+
+
+
         if road_properties_input['road_distributed_wind'] == True or road_properties_input['turbine_rating_MW'] < 0.1:
             road_properties_output['road_volume'] = road_properties_input['road_length_adder_m'] * \
                                                     (road_properties_input['road_width_ft'] * self._meters_per_foot) * \
                                                     (road_properties_input[
                                                          'road_thickness'] * self._meters_per_inch)  # units of cubic meters
+
+
         else:
             road_properties_output['road_length_m'] = ((road_properties_input['num_turbines'] - 1) *
                                                        road_properties_input['turbine_spacing_rotor_diameters'] *
                                                        road_properties_input['rotor_diameter_m']) + \
                                                       road_properties_input['road_length_adder_m']
+
+            '''NOTE'''
+            '''Changed here'''
+
+            road_properties_output['road_length_m'] = self.Total_Connection_length_km
+
+            ''' Till here'''
+
+
             road_properties_output['road_width_m'] = road_properties_input['road_width_ft'] * self._meters_per_foot
             road_properties_output['road_volume'] = road_properties_output['road_length_m'] * \
                                                     (road_properties_input['road_width_ft'] * self._meters_per_foot) * \

@@ -13,6 +13,7 @@ from .DevelopmentCost import DevelopmentCost
 
 import pandas as pd
 
+
 class Manager:
     """
     The Manager class distributes input and output dictionaries among
@@ -20,7 +21,7 @@ class Manager:
     structure.
     """
 
-    def __init__(self, input_dict, output_dict):
+    def __init__(self, input_dict, output_dict,Turbine_coordinates, Substation_coordinate):
         """
         This initializer sets up the instance variables of:
 
@@ -33,6 +34,9 @@ class Manager:
         """
         self.input_dict = input_dict
         self.output_dict = output_dict
+        self.Turbine_coordinates = Turbine_coordinates
+        self.Substation_coordinate = Substation_coordinate
+
 
     def execute_landbosse(self, project_name):
         try:
@@ -53,8 +57,13 @@ class Manager:
             foundation_cost = FoundationCost(input_dict=self.input_dict, output_dict=self.output_dict, project_name=project_name)
             foundation_cost.run_module()
 
-            roads_cost = SitePreparationCost(input_dict=self.input_dict, output_dict=self.output_dict, project_name=project_name)
+            '''NOTE'''
+            '''Changed here'''
+
+            roads_cost = SitePreparationCost(input_dict=self.input_dict, output_dict=self.output_dict, project_name=project_name, Turbine_coordinates = self.Turbine_coordinates, Substation_coordinate = self.Substation_coordinate)
             roads_cost.run_module()
+
+            '''Till here'''
 
             substation_cost = SubstationCost(input_dict=self.input_dict, output_dict=self.output_dict, project_name=project_name)
             substation_cost.run_module()
@@ -65,20 +74,33 @@ class Manager:
             transdist_cost = GridConnectionCost(input_dict=self.input_dict, output_dict=self.output_dict, project_name=project_name)
             transdist_cost.run_module()
 
-            collection_cost = ArraySystem(input_dict=self.input_dict, output_dict=self.output_dict, project_name=project_name)
+            ''' NOTE'''
+            ''' Changed here '''
+
+            collection_cost = ArraySystem(input_dict=self.input_dict, output_dict=self.output_dict, project_name=project_name, Turbine_coordinates = self.Turbine_coordinates, Substation_coordinate = self.Substation_coordinate)
             collection_cost.run_module()
+
+            '''till here'''
 
             development_cost = DevelopmentCost(input_dict=self.input_dict, output_dict=self.output_dict,
                                           project_name=project_name)
             development_cost.run_module()
 
+            ''' NOTE'''
+            '''Changed here '''
+
             erection_cost_output_dict = dict()
             erection_cost = ErectionCost(
                 input_dict=self.input_dict,
                 output_dict=self.output_dict,
-                project_name=project_name
+                project_name=project_name,
+                Turbine_coordinates = self.Turbine_coordinates,
+                Substation_coordinate = self.Substation_coordinate
             )
             erection_cost.run_module()
+
+            '''till here'''
+
             self.output_dict['erection_cost'] = erection_cost_output_dict
 
 

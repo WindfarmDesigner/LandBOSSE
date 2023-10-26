@@ -5,6 +5,8 @@ from math import ceil
 from .CostModule import CostModule
 from .WeatherDelay import WeatherDelay
 
+from landbosse.model.cabling_optimization_function import  cabling_optimization_function
+
 import traceback
 
 # constants
@@ -156,7 +158,7 @@ class ErectionCost(CostModule):
     rsmeans
         (p.DataFrame) RSMeans data
     """
-    def __init__(self, input_dict, output_dict, project_name):
+    def __init__(self, input_dict, output_dict, project_name,Turbine_coordinates,Substation_coordinate):
         """
         Parameters
         ----------
@@ -176,6 +178,22 @@ class ErectionCost(CostModule):
         # only.
         self._possible_crane_cost = None
         self._number_of_equip = None
+
+        ''' NOTE '''
+        ''' Changed here '''
+
+        dict_for_turbine_rating = self.output_dict['trans_dist_cost_module_type_operation']
+        Turbine_Rating_MW = dict_for_turbine_rating[0]['turbine_rating_MW']
+
+        Total_Connection_length_km, Total_Cabling_length, Total_Cabling_costs_dollar = cabling_optimization_function(Turbine_Rating_MW, Turbine_coordinates, Substation_coordinate)
+
+        turbine_spacing_neu = Total_Connection_length_km / float(self.input_dict['num_turbines'])
+
+        self.input_dict['turbine_spacing_rotor_diameters'] = turbine_spacing_neu / (km_per_m * self.input_dict['rotor_diameter_m'])
+
+
+        ''' till here '''
+
 
     def run_module(self):
         """

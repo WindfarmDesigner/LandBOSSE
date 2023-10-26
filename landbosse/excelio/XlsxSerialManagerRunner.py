@@ -11,13 +11,14 @@ from .XlsxDataframeCache import XlsxDataframeCache
 from .XlsxGenerator import XlsxGenerator
 
 
+
 class XlsxSerialManagerRunner(XlsxManagerRunner):
     """
     This subclass implementation of XlsxManagerRunner runs all projects
     in a serial loop.
     """
 
-    def run_from_project_list_xlsx(self, projects_xlsx, enable_cost_and_scaling_modifications=False):
+    def run_from_project_list_xlsx(self, projects_xlsx,Turbine_coordinates, Substation_coordinate , enable_cost_and_scaling_modifications=False):
         """
         This function runs all the scenarios in the projects_xlsx file. It creates
         the OrderedDict that holds the results of all the runs. See the return
@@ -116,7 +117,7 @@ class XlsxSerialManagerRunner(XlsxManagerRunner):
 
             # Now run the manager and accumulate its result into the runs_dict
             output_dict = dict()
-            mc = Manager(input_dict=master_input_dict, output_dict=output_dict)
+            mc = Manager(input_dict=master_input_dict, output_dict=output_dict, Turbine_coordinates = Turbine_coordinates,Substation_coordinate =  Substation_coordinate)
             mc.execute_landbosse(project_name=project_id_with_serial)
             output_dict['project_series'] = project_parameters
             runs_dict[project_id_with_serial] = output_dict

@@ -16,10 +16,9 @@ import math
 import numpy as np
 import traceback
 import pandas as pd
-
 from .CostModule import CostModule
 from .WeatherDelay import WeatherDelay as WD
-
+from landbosse.model.cabling_optimization_function import  cabling_optimization_function
 
 class Cable:
     """
@@ -100,6 +99,7 @@ class Cable:
         self.char_impedance = np.sqrt(num / den)
 
     def calc_power_factor(self):
+
         """
         Calculate power factor
         """
@@ -115,7 +115,6 @@ class Cable:
 
         # TODO: Verify eqn is correct
         self.cable_power = (np.sqrt(3) * self.rated_voltage * self.current_capacity * self.power_factor / 1000)
-
 
 class Array(Cable):
     """Array cable base class"""
@@ -165,6 +164,7 @@ class Array(Cable):
         self.calc_array_cable_len(addl_inputs)
 
     def calc_max_turb_per_cable(self, addl_inputs):
+
         """
         Calculate the number of turbines that each cable can support
 
@@ -179,6 +179,7 @@ class Array(Cable):
         self.max_turb_per_cable = np.floor(self.cable_power / turbine_rating_MW)
 
     def calc_num_turb_per_cable(self, addl_inputs):
+
         """
         Calculates actual number of turbines per cable, accounting for upstream
         turbines.
@@ -241,7 +242,6 @@ class Array(Cable):
 
         return self.turb_section_length
 
-
 class ArraySystem(CostModule):
     """
 
@@ -272,7 +272,7 @@ class ArraySystem(CostModule):
 
     """
 
-    def __init__(self, input_dict, output_dict, project_name):
+    def __init__(self, input_dict, output_dict, project_name,Turbine_coordinates,Substation_coordinate):
 
         self.input_dict = input_dict
         self.output_dict = output_dict
@@ -284,6 +284,21 @@ class ArraySystem(CostModule):
         self.turbines_on_cable = []
         self._cable_length_km = dict()
         self.check_terminal = 0
+
+        ''' NOTE
+        Changed here '''
+
+        dict_for_turbine_rating = self.output_dict['trans_dist_cost_module_type_operation']
+        Turbine_Rating_MW  = dict_for_turbine_rating[0]['turbine_rating_MW']
+
+        Total_Connection_length_km, Total_Cabling_length , Total_Cabling_costs_dollar = cabling_optimization_function(Turbine_Rating_MW,
+                                                                                          Turbine_coordinates,Substation_coordinate)
+
+        self.Total_Connection_length_km = Total_Connection_length_km
+        self.Total_Cabling_costs_dollar = Total_Cabling_costs_dollar
+
+        '''till here'''
+
 
 
     def calc_num_strings(self):
@@ -561,9 +576,6 @@ class ArraySystem(CostModule):
         self.addl_specs['rotor_diameter_m'] = self.input_dict['rotor_diameter_m']
         self.addl_specs['line_frequency_hz'] = self.input_dict['line_frequency_hz']
 
-
-
-
         system = {
             'upstream_turb': self.addl_specs['upstream_turb'],
             'turb_sequence': self.addl_specs['turb_sequence'],
@@ -575,7 +587,6 @@ class ArraySystem(CostModule):
         # Loops through all user defined array cable types, composing them
         # in ArraySystem
 
-
         self.cables = {}
         self.input_dict['cable_specs'] = self.input_dict['cable_specs_pd'].T.to_dict()
         n=0 #to keep tab of number of cables input by user.
@@ -584,7 +595,6 @@ class ArraySystem(CostModule):
             # Create instance of each cable and assign to ArraySystem.cables
             cable = Array(specs, self.addl_specs)
             n+=1
-
 
             #self.cables[name] stores value which is a new instantiation of object of type Array.
             self.cables[specs['Array Cable']] = cable
@@ -654,6 +664,15 @@ class ArraySystem(CostModule):
             cable.total_cost = (total_cable_len / self._km_to_LF) * cable.cost
             self._total_cable_cost += cable.total_cost  # Keep running tally of total cable cost used in wind farm.
 
+        ''' NOTE
+        Changed here '''
+
+        self.output_dict['total_cable_len_km'] = self.Total_Connection_length_km
+        self._total_cable_cost = self.Total_Cabling_costs_dollar
+
+        '''till here'''
+
+
         # Repopulate the turbines per cable sequence to make sure it reflects any changes that happened since
         # the first time this sequence was populated.
         self.output_dict['num_turb_per_cable'] = [cable.num_turb_per_cable for cable in self.cables.values()]
@@ -664,8 +683,12 @@ class ArraySystem(CostModule):
         Calculates the length of trench needed based on cable length and width of mulcher.
         """
 
-        # units of cubic meters
-        trench_properties_output['trench_length_km'] = trench_properties_output['total_cable_len_km']
+        ''' NOTE
+        Changed here '''
+
+        trench_properties_output['trench_length_km'] =  self.Total_Connection_length_km
+
+        '''till here'''
 
     def calculate_weather_delay(self, weather_delay_input_data, weather_delay_output_data):
         """Calculates wind delays for roads"""
@@ -708,6 +731,7 @@ class ArraySystem(CostModule):
 
         throughput_operations = construction_time_input_data['rsmeans']
         trench_length_km = construction_time_output_data['trench_length_km']
+
         if construction_time_input_data['turbine_rating_MW'] >= 0.1:
             operation_data = throughput_operations.where(throughput_operations['Module'] == 'Collection').dropna(
                 thresh=4)
@@ -775,6 +799,7 @@ class ArraySystem(CostModule):
         construction_time_output_data['operation_data_id_days_crews_workers'] = operation_data_id_days_crews_workers
         construction_time_output_data['operation_data_entire_farm'] = operation_data
 
+
         return construction_time_output_data['operation_data_entire_farm']
 
 
@@ -809,7 +834,7 @@ class ArraySystem(CostModule):
         # switch for small DW
         else:
             if calculate_costs_output_dict['Equipment Cost USD with weather delays'] < 137:
-                calculate_costs_output_dict['Equipment Cost USD with weather delays'] = 137   #cost of renting for a day
+                calculate_costs_output_dict['Equipment Cost USD with weather delays'] = 137   # cost of renting for a day
                 trenching_equipment_rental_cost_df = pd.DataFrame([['Equipment rental', calculate_costs_output_dict[
                     'Equipment Cost USD with weather delays'], 'Collection']],
                                                                   columns=['Type of cost', 'Cost USD',
@@ -841,6 +866,7 @@ class ArraySystem(CostModule):
         #Calculate cable cost:
         cable_cost_usd_per_LF_df = pd.DataFrame([['Materials',self._total_cable_cost, 'Collection']],
                                                columns = ['Type of cost', 'Cost USD', 'Phase of construction'])
+
 
         # Combine all calculated cost items into the 'collection_cost' dataframe:
         collection_cost = pd.DataFrame([],columns = ['Type of cost', 'Cost USD', 'Phase of construction'])
@@ -910,36 +936,42 @@ class ArraySystem(CostModule):
             'variable_df_key_col_name': 'Number of Turbines Per String in Full String',
             'value': float(self.output_dict['total_turb_per_string'])
         })
+
         result.append({
             'unit': '',
             'type': 'variable',
             'variable_df_key_col_name': 'Number of Full Strings',
             'value': float(self.output_dict['num_full_strings'])
         })
+
         result.append({
             'unit': '',
             'type': 'variable',
             'variable_df_key_col_name': 'Number of Turbines in Partial String',
             'value': float(self.output_dict['num_leftover_turb'])
         })
+
         result.append({
             'unit': '',
             'type': 'variable',
             'variable_df_key_col_name': 'Number of Partial Strings',
             'value': float(self.output_dict['num_partial_strings'])
         })
+
         result.append({
             'unit': '',
             'type': 'variable',
             'variable_df_key_col_name': 'Total number of strings full + partial',
             'value': float(self.output_dict['num_full_strings'] + self.output_dict['num_partial_strings'])
         })
+
         result.append({
             'unit': '',
             'type': 'variable',
             'variable_df_key_col_name': 'Trench Length to Substation (km)',
             'value': float(self.output_dict['distance_to_grid_connection_km'])
         })
+
         result.append({
             'unit': '',
             'type': 'variable',
@@ -1024,7 +1056,9 @@ class ArraySystem(CostModule):
             _dict['module'] = module
 
         self.output_dict['collection_cost_csv'] = result
+
         return result
+
 
     def run_module(self):
         """
@@ -1070,6 +1104,7 @@ class ArraySystem(CostModule):
                 project_id=self.project_name,
                 total_or_turbine=True
             )
+
             return 0, 0  # module ran successfully
         except Exception as error:
             traceback.print_exc()
