@@ -147,3 +147,15 @@ landbosse/tests/*.csv
 # repository directoy, ignore them.
 outputs/
 inputs/
+project_input_template/landbosse-expected-validation-data.xlsx
+project_input_template/project_data/clipper_25_public.xlsx
+project_input_template/project_data/ge15_expected_validation.xlsx
+project_input_template/project_data/ge15_public.xlsx
+project_input_template/project_data/ge15_public_dist.xlsx
+project_input_template/project_data/iea36_120_project_data.xlsx
+project_input_template/project_data/iea36_85_project_data.xlsx
+project_input_template/project_data/northwind_100_public.xlsx
+project_input_template/project_data/Vestas_V47_public.xlsx
+project_input_template/project_list.xlsx
+project_input_template/project_list_simplified.xlsx
+project_input_template/README.md
