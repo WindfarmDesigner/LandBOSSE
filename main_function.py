@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 import pandas as pd
+from sys import exit
 from landbosse.excelio import XlsxSerialManagerRunner
 from landbosse.excelio import XlsxParallelManagerRunner
 from landbosse.excelio import XlsxGenerator
