@@ -18,7 +18,7 @@ class XlsxSerialManagerRunner(XlsxManagerRunner):
     in a serial loop.
     """
 
-    def run_from_project_list_xlsx(self, projects_xlsx,Turbine_coordinates, Substation_coordinate,Desired_Voltage, enable_cost_and_scaling_modifications=False):
+    def run_from_project_list_xlsx(self,WriteExcel,Display,projects_xlsx,Turbine_coordinates, Substation_coordinate,Desired_Voltage, enable_cost_and_scaling_modifications=False):
         """
         This function runs all the scenarios in the projects_xlsx file. It creates
         the OrderedDict that holds the results of all the runs. See the return
@@ -53,7 +53,8 @@ class XlsxSerialManagerRunner(XlsxManagerRunner):
         """
         # Load the project list
         extended_project_list_before_parameter_modifications = self.read_project_and_parametric_list_from_xlsx()
-        print('>>> Project and parametric lists loaded')
+        if Display:
+            print('>>> Project and parametric lists loaded')
 
         # For file operations
         file_ops = XlsxFileOperations()
@@ -89,9 +90,10 @@ class XlsxSerialManagerRunner(XlsxManagerRunner):
             project_data_xlsx = os.path.join(file_ops.landbosse_input_dir(), 'project_data', f'{project_data_basename}.xlsx')
 
             # Log each project
-            print(f'<><><><><><><><><><><><><><><><><><> {project_id_with_serial} <><><><><><><><><><><><><><><><><><>')
-            print('>>> project_id: {}'.format(project_id_with_serial))
-            print('>>> Project data: {}'.format(project_data_xlsx))
+            if Display:
+                print(f'<><><><><><><><><><><><><><><><><><> {project_id_with_serial} <><><><><><><><><><><><><><><><><><>')
+                print('>>> project_id: {}'.format(project_id_with_serial))
+                print('>>> Project data: {}'.format(project_data_xlsx))
 
             # Read the project data sheets.
             project_data_sheets = XlsxDataframeCache.read_all_sheets_from_xlsx(project_data_basename)
@@ -106,11 +108,13 @@ class XlsxSerialManagerRunner(XlsxManagerRunner):
 
             # Append the modified project parameters
             extended_project_list_after_parameter_modifications.append(project_parameters)
-
-            # Write all project_data sheets
-            parametric_project_data_path = \
-                os.path.join(file_ops.parametric_project_data_output_path(), f'{project_id_with_serial}_project_data.xlsx')
-            XlsxGenerator.write_project_data(project_data_sheets, parametric_project_data_path)
+            
+            # TUM: CHANGED HERE!!
+            if WriteExcel:
+                # Write all project_data sheets
+                parametric_project_data_path = \
+                    os.path.join(file_ops.parametric_project_data_output_path(), f'{project_id_with_serial}_project_data.xlsx')
+                XlsxGenerator.write_project_data(project_data_sheets, parametric_project_data_path)
 
             # Create the master input dictionary.
             master_input_dict = xlsx_reader.create_master_input_dictionary(project_data_sheets, project_parameters)
@@ -121,7 +125,11 @@ class XlsxSerialManagerRunner(XlsxManagerRunner):
             mc.execute_landbosse(project_name=project_id_with_serial)
             output_dict['project_series'] = project_parameters
             runs_dict[project_id_with_serial] = output_dict
-
+        # TUM: CHANGED HERE!!
+        # check if nr turbines in EXCEL correlates with turbine coord input
+        if master_input_dict['num_turbines'] != Turbine_coordinates.shape[0]:
+            raise ValueError('Turbine number in Landbosse EXCEL input file does not match number of turbine coordinates!')
+        
         final_result = dict()
         final_result['details_list'] = self.extract_details_lists(runs_dict)
         final_result['module_type_operation_list'] = self.extract_module_type_operation_lists(runs_dict)
