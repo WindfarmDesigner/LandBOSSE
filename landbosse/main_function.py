@@ -11,7 +11,11 @@ from landbosse.excelio import XlsxFileOperations
 
 
 def run_landbosse(Turbine_coordinates, Substation_coordinate, Desired_Voltage, WriteExcel, Display):
-
+    # TUM: CHANGED!!
+    # transform from m to km
+    Turbine_coordinates = Turbine_coordinates / 1000
+    Substation_coordinate = Substation_coordinate / 1000
+    
     # Print start timestamp
     if Display:
         print(f'>>>>>>>> Begin run {datetime.now()} <<<<<<<<<<')
