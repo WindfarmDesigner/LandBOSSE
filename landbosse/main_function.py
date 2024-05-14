@@ -15,6 +15,11 @@ def run_landbosse(Turbine_coordinates, Substation_coordinate, Desired_Voltage, W
     # transform from m to km
     Turbine_coordinates = Turbine_coordinates / 1000
     Substation_coordinate = Substation_coordinate / 1000
+    # change directory to find inputs
+    cur_path = os.path.abspath(os.getcwd())
+    landbosse_path = os.path.dirname(os.path.abspath(__file__))
+    os.chdir(landbosse_path)
+    os.chdir('..')
     
     # Print start timestamp
     if Display:
@@ -117,5 +122,8 @@ def run_landbosse(Turbine_coordinates, Substation_coordinate, Desired_Voltage, W
         csv_generator = CsvGenerator(file_ops)
         costs = csv_generator.create_costs_dataframe(final_result['module_type_operation_list'])
     
+    # TUM: CHANGED!
+    # change back to original path
+    os.chdir(cur_path)
     return costs
 
