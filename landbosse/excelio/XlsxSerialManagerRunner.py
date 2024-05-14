@@ -118,18 +118,18 @@ class XlsxSerialManagerRunner(XlsxManagerRunner):
 
             # Create the master input dictionary.
             master_input_dict = xlsx_reader.create_master_input_dictionary(project_data_sheets, project_parameters)
-
+            
+            # TUM: changed! Manually overwrite turbine number
+            master_input_dict["num_turbines"] = Turbine_coordinates.shape[0]
+            # ----
+            
             # Now run the manager and accumulate its result into the runs_dict
             output_dict = dict()
             mc = Manager(input_dict=master_input_dict, output_dict=output_dict, Turbine_coordinates = Turbine_coordinates,Substation_coordinate =  Substation_coordinate, Desired_Voltage = Desired_Voltage)
             mc.execute_landbosse(project_name=project_id_with_serial)
             output_dict['project_series'] = project_parameters
             runs_dict[project_id_with_serial] = output_dict
-        # TUM: CHANGED HERE!!
-        # check if nr turbines in EXCEL correlates with turbine coord input
-        if master_input_dict['num_turbines'] != Turbine_coordinates.shape[0]:
-            raise ValueError('Turbine number in Landbosse EXCEL input file does not match number of turbine coordinates!')
-        
+
         final_result = dict()
         final_result['details_list'] = self.extract_details_lists(runs_dict)
         final_result['module_type_operation_list'] = self.extract_module_type_operation_lists(runs_dict)
