@@ -8,9 +8,10 @@ import numpy as np
 def cabling_optimization_function(Turbine_Power,Turbine_coordinates,Substation_coordinate, Desired_Voltage):
     # Part 2: Cable length opmization for each connection
     #########################################################################################################################
-    Cable_optimization = Cable_length_optimization_algorithms_class(Turbine_coordinates, Substation_coordinate)
+    Cable_optimization = Cable_length_optimization_algorithms_class(Turbine_coordinates, Substation_coordinate, Turbine_Power)
 
     Optimized_cable_length_for_each_connection = Cable_optimization.minimum_spanning_tree_Prim_algorithm()
+    # Optimized_cable_length_for_each_connection = Cable_optimization.Window_openMDAO()
     # Optimized_cable_length_for_each_connection = Cable_optimization.minimum_spanning_tree_kruskal_algorithm()
     # Optimized_cable_length_for_each_connection = Cable_optimization.calculate_cable_lengths_Dijkstra_Algorithm()
     # Optimized_cable_length_for_each_connection = Cable_optimization.calculate_cable_lengths_TSP_Heuristic()
@@ -20,7 +21,8 @@ def cabling_optimization_function(Turbine_Power,Turbine_coordinates,Substation_c
     # print("\n")
 
     # Total length of connection in km
-
+    # adjusted = {tuple(i): OptNew[1][1][tuple(i)] for i in np.argwhere(sp)}
+    
     Total_connection_length = sum(Optimized_cable_length_for_each_connection.values())
     # print(f' Total Connection length: {Total_connection_length : .2f} km ')
     # print("\n")

@@ -10,6 +10,7 @@ from numpy import newaxis as na
 from scipy.sparse.csgraph import shortest_path
 from scipy.spatial import distance_matrix
 from scipy.optimize import linear_sum_assignment
+from landbosse.model.hybrid_heuristic import cable_design
 
 
 class Cable_length_optimization_algorithms_class:
@@ -33,11 +34,56 @@ class Cable_length_optimization_algorithms_class:
 #                 (5, 15): 0.49091750834534326, (8, 11): 0.550726792520575, (9, 13): 1.360147050873544, (12, 14): 1.826307750626931}
 
 
-    def __init__(self, Turbine_coordinates_input, Substation_coordinate_input ):
+    def __init__(self, Turbine_coordinates_input, Substation_coordinate_input, Turbine_Power):
 
         self.Turbine_coordinates  = Turbine_coordinates_input
         self.Substation_coordinate = Substation_coordinate_input
+        self.Turbine_Power = Turbine_Power
 
+    def Window_openMDAO(self):
+        # all_coordinates = np.vstack((self.Turbine_coordinates, self.Substation_coordinate))
+        # x_coordinates, y_coordinates = all_coordinates[:, 0], all_coordinates[:, 1]
+        x = self.Turbine_coordinates[:,0]
+        y = self.Turbine_coordinates[:,1]
+        # for Sebastian's code
+        cable_types = [[95, 300, 206], [120, 340, 221], [150, 375, 236], [185, 420, 256], [240, 480, 287], [300, 530, 316], [400, 590, 356], [500, 655, 406], [630, 715, 459], [800, 775, 521], [1000, 825, 579]]
+        number_turbines_per_cable = [10,20,30]
+        collection_voltage = 66000
+        turbine_rated_current = np.divide(self.Turbine_Power*1e6, (collection_voltage  * np.sqrt(3.0)))
+        layout = []
+        for i in range(len(x)):
+            layout.append([i,x[i],y[i]])
+        # copied from "choose_cables" in hybrid_heuristic
+        cables_info = cable_types
+        cable_list = []
+        for number in number_turbines_per_cable:
+            for cable in cables_info:
+                if turbine_rated_current * number <= cable[1]:
+                    cable_list.append([number, cable[2]])
+                    break
+        # Optimization
+        Opt_Cabling = cable_design(layout, self.Substation_coordinate, number_turbines_per_cable, cable_list)
+        # transfer to fit Anidrudh style
+        all_coordinates = np.vstack((self.Turbine_coordinates, self.Substation_coordinate))
+        x_coordinates, y_coordinates = all_coordinates[:, 0], all_coordinates[:, 1]
+        x = x_coordinates
+        y= y_coordinates
+        CablePlan = []
+        Dist = []
+        for v in Opt_Cabling[1][1]:
+            for i in v:
+                cur = [x-1 for x in i]
+                if cur[0] < 0:
+                    cur[0] = len(self.Turbine_coordinates)
+                if cur[1] < 0:
+                    cur[0] = len(self.Turbine_coordinates)
+                CablePlan.append(tuple(cur))
+                Dist.append(np.sqrt( (x[cur[0]] - x[cur[1]])**2 + (y[cur[0]] - y[cur[1]])**2 ))
+        abc = {}
+        for i in range(len(CablePlan)):
+            abc[CablePlan[i]] = Dist[i]
+        return abc
+    
     def minimum_spanning_tree_Prim_algorithm(self):  # Prim's algorithm
 
         all_coordinates = np.vstack((self.Turbine_coordinates, self.Substation_coordinate))
