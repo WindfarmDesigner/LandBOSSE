@@ -116,12 +116,12 @@ class XlsxSerialManagerRunner(XlsxManagerRunner):
                     os.path.join(file_ops.parametric_project_data_output_path(), f'{project_id_with_serial}_project_data.xlsx')
                 XlsxGenerator.write_project_data(project_data_sheets, parametric_project_data_path)
 
+            # TUM: changed! Manually overwrite turbine number
+            project_parameters["Number of turbines"] = Turbine_coordinates.shape[0]
+            # ----
+            
             # Create the master input dictionary.
             master_input_dict = xlsx_reader.create_master_input_dictionary(project_data_sheets, project_parameters)
-            
-            # TUM: changed! Manually overwrite turbine number
-            master_input_dict["num_turbines"] = Turbine_coordinates.shape[0]
-            # ----
             
             # Now run the manager and accumulate its result into the runs_dict
             output_dict = dict()
