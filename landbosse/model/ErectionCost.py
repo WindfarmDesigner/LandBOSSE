@@ -17,7 +17,7 @@ m_per_ft = 0.3048
 
 class Point(object):
     def __init__(self, x, y):
-        if type(x) == type(pd.Series(dtype=np.float_)):
+        if type(x) == type(pd.Series(dtype=np.float64)):
             self.x = float(x.values[0])
             self.y = float(y.values[0])
         elif type(x) == type(np.array([])):
@@ -273,33 +273,33 @@ class ErectionCost(CostModule):
             })
 
         for _, row in self.output_dict['crane_data_output'].iterrows():
-            dashed_row = '{} - {} - {}'.format(row[0], row[1], row[2])
+            dashed_row = '{} - {} - {}'.format(row.iloc[0], row.iloc[1], row.iloc[2])
             result.append({
                 'unit': '',
                 'type': 'dataframe',
                 'variable_df_key_col_name': 'crane_data_output: crane_boom_operation_concat - variable - value',
                 'value': dashed_row,
-                'last_number': row[2]
+                'last_number': row.iloc[2]
             })
 
         for _, row in self.output_dict['crane_cost_details'].iterrows():
-            dashed_row = '{} - {} - {}'.format(row[0], row[1], row[2])
+            dashed_row = '{} - {} - {}'.format(row.iloc[0], row.iloc[1], row.iloc[2])
             result.append({
                 'unit': '',
                 'type': 'dataframe',
                 'variable_df_key_col_name': 'crane_cost_details: Operation ID - Type of cost - Cost',
                 'value': dashed_row,
-                'last_number': row[2]
+                'last_number': row.iloc[2]
             })
 
         for _, row in self.output_dict['total_erection_cost'].iterrows():
-            dashed_row = '{} - {} - {}'.format(row[0], row[1], row[2])
+            dashed_row = '{} - {} - {}'.format(row.iloc[0], row.iloc[1], row.iloc[2])
             result.append({
                 'unit': '',
                 'type': 'dataframe',
                 'variable_df_key_col_name': 'total_erection_cost: Phase of construction - Type of cost - Cost USD',
                 'value': dashed_row,
-                'last_number': row[2]
+                'last_number': row.iloc[2]
             })
 
         for _, row in self.output_dict['erection_selected_detailed_data'].iterrows():
@@ -526,7 +526,7 @@ class ErectionCost(CostModule):
         # within that window and use that time frame for weather delays; if not, use the number of days calculated
         operation_time['time_construct_bool'] = (operation_time['Operational construct days'] >
                                                  erection_construction_time * 30)
-        boolean_dictionary = {True: erection_construction_time * 30, False: np.NAN}
+        boolean_dictionary = {True: erection_construction_time * 30, False: np.nan}
         operation_time['time_construct_bool'] = operation_time['time_construct_bool'].map(boolean_dictionary)
         operation_time['Time construct days'] = operation_time[
             ['time_construct_bool', 'Operational construct days']].min(axis=1)
@@ -642,7 +642,7 @@ class ErectionCost(CostModule):
             # that timeframe for weather delays; if not, use the number of days calculated
             operation_time['time_construct_bool'] = (turbine_num / operation_time['Operational construct days'] * 6
                                                      > float(rate_of_deliveries))
-            boolean_dictionary = {True: (float(turbine_num) / (float(rate_of_deliveries) / 6)), False: np.NAN}
+            boolean_dictionary = {True: (float(turbine_num) / (float(rate_of_deliveries) / 6)), False: np.nan}
             operation_time['time_construct_bool'] = operation_time['time_construct_bool'].map(boolean_dictionary)
             operation_time['Time construct days'] = operation_time[
                 ['time_construct_bool', 'Operational construct days']].max(
@@ -712,7 +712,7 @@ class ErectionCost(CostModule):
                                        'Max wind speed m per s', 'Setup time hr', 'Breakdown time hr',
                                        'Hoist speed m per min', 'Speed of travel km per hr',
                                        'Crew type ID', 'Crane poly'])
-            crane_poly = pd.concat((crane_poly, df), sort=True)
+            crane_poly = pd.concat([d for d in [crane_poly, df] if not d.empty and not d.isna().all().all()], sort=True)
         return crane_poly
 
     def calculate_component_lift_max_wind_speed(self, *, component_group, crane_poly, component_max_speed, operation):
@@ -1241,7 +1241,7 @@ class ErectionCost(CostModule):
              ['Erection', 'Materials', 0]],
             columns=['Phase of construction', 'Type of cost', 'Cost USD'])
 
-        total_cost_summed_erection = total_erection_cost.sum(numeric_only=True)[0]
+        total_cost_summed_erection = total_erection_cost.sum(numeric_only=True).iloc[0]
 
         erection_wind_mult = selected_detailed_data['Wind multiplier']
         erection_wind_mult = erection_wind_mult.reset_index(drop=True).mean()

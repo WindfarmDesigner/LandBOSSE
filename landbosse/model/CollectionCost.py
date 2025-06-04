@@ -777,7 +777,7 @@ class ArraySystem(CostModule):
         # happens within that window and use that timeframe for weather delays;
         # if not, use the number of days calculated
         operation_data['time_construct_bool'] = operation_data['Number of days taken by single crew'] > collection_construction_time * 30
-        boolean_dictionary = {True: collection_construction_time * 30, False: np.NAN}
+        boolean_dictionary = {True: collection_construction_time * 30, False: np.nan}
         operation_data['time_construct_bool'] = operation_data['time_construct_bool'].map(boolean_dictionary)
         operation_data['Time construct days'] = operation_data[['time_construct_bool', 'Number of days taken by single crew']].min(axis=1)
         num_days = operation_data['Time construct days'].max()
@@ -871,10 +871,8 @@ class ArraySystem(CostModule):
 
         # Combine all calculated cost items into the 'collection_cost' dataframe:
         collection_cost = pd.DataFrame([],columns = ['Type of cost', 'Cost USD', 'Phase of construction'])
-        collection_cost = pd.concat( (collection_cost,
-                                      trenching_equipment_rental_cost_df,
-                                      trenching_labor_cost_df,
-                                      cable_cost_usd_per_LF_df) )
+        collection_cost = pd.concat([df for df in [collection_cost, trenching_equipment_rental_cost_df, trenching_labor_cost_df, cable_cost_usd_per_LF_df] if not df.empty and not df.isna().all().all()])
+
 
         # Calculate Mobilization Cost and add to collection_cost dataframe.
         # For utility scale plants, mobilization is assumed to be 5% of the sum of labor, equipment, and material costs.
